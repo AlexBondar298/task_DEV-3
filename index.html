@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text Selection</title>
+    <link rel="stylesheet" href="./index.css" />
+  </head>
+  <body>
+    <h1>Challenge for a junior fullstack developer</h1>
+    <input type="text" id="textInput" value="Текст" />
+    <div id="rectangle"></div>
+    <button id="button">OK</button>
+    <p id="text"></p>
+
+    <script>
+      let isTextSelected = false;
+      let startX, startY;
+      let start, end;
+      let selectedText;
+      let inputElement;
+
+      // Функция для отображения и перемещения прямоугольника
+      function drawRectangle(eventMove) {
+        let rectangle = document.getElementById("rectangle");
+        let width = eventMove.pageX - startX;
+        let height = eventMove.pageY - startY;
+
+        rectangle.style.width = Math.abs(width) + "px";
+        rectangle.style.height = Math.abs(height) + "px";
+
+        if (width < 0) {
+          rectangle.style.left = eventMove.pageX + "px";
+        }
+        if (height < 0) {
+          rectangle.style.top = eventMove.pageY + "px";
+        }
+      }
+
+      document.addEventListener("mousedown", function (eventStart) {
+        if (event.target.id !== "button") {
+          inputElement = document.getElementById("textInput");
+          start = inputElement.selectionStart;
+          end = inputElement.selectionEnd;
+          selectedText = inputElement.value.substring(start, end);
+
+          if (selectedText.length >= 0) {
+            isTextSelected = true;
+            startX = eventStart.pageX;
+            startY = eventStart.pageY;
+
+            let rectangle = document.getElementById("rectangle");
+            rectangle.style.left = startX + "px";
+            rectangle.style.top = startY + "px";
+            rectangle.style.width = "0px";
+            rectangle.style.height = "0px";
+            rectangle.style.display = "block";
+
+            document.addEventListener("mousemove", drawRectangle);
+          }
+        }
+      });
+
+      document.addEventListener("mouseup", function () {
+        if (event.target.id !== "button") {
+          if (isTextSelected) {
+            inputElement.value = inputElement.value.slice(0, start) + inputElement.value.slice(end);
+            let rectangle = document.getElementById("rectangle");
+            rectangle.style.display = "none";
+
+            let span = document.createElement("span");
+            span.textContent = selectedText;
+            span.style.position = "absolute";
+            span.style.left = startX + "px";
+            span.style.top = startY + "px";
+            document.body.appendChild(span);
+
+            isTextSelected = false;
+            document.removeEventListener("mousemove", drawRectangle);
+          }
+        }
+      });
+
+      document.addEventListener("click", function (event) {
+        if (event.target.id === "button") {
+          document.getElementById("text").textContent = document.getElementById("textInput").value;
+        }
+        if (event.ctrlKey) {
+          inputElement = document.getElementById("textInput");
+          start = inputElement.selectionStart;
+          selectedText = inputElement.value.substring(start - 1, start);
+          inputElement.setSelectionRange(start - 1, start);
+        }
+      });
+    </script>
+  </body>
+</html>

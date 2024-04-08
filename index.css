@@ -1,0 +1,12 @@
+h1 {
+  text-align: center;
+}
+#rectangle {
+  position: absolute;
+  border: 1px dashed red;
+  display: none;
+}
+#textInput::selection {
+  background-color: yellow; 
+  color: red;
+}
